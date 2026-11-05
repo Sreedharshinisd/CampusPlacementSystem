@@ -1,5 +1,4 @@
-﻿
-using CampusPlacementSystem.Models;
+﻿using CampusPlacementSystem.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,5 +11,32 @@ public class ApplicationDbContext
         DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
+    }
+
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+
+        builder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(rt => rt.Id);
+
+            entity.Property(rt => rt.TokenHash)
+                .IsRequired()
+                .HasMaxLength(500);
+
+            entity.Property(rt => rt.UserId)
+                .IsRequired();
+
+            entity.HasIndex(rt => rt.TokenHash)
+                .IsUnique();
+
+            entity.HasOne(rt => rt.User)
+                .WithMany()
+                .HasForeignKey(rt => rt.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 }

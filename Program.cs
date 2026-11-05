@@ -1,8 +1,13 @@
 using CampusPlacementSystem.Data;
 using CampusPlacementSystem.Data.Seeders;
 using CampusPlacementSystem.Models;
+using CampusPlacementSystem.Services;
+using CampusPlacementSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,8 +28,55 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
+// JWT settings
+var jwtSettings = builder.Configuration
+    .GetSection("Jwt")
+    .Get<JwtSettings>()
+    ?? throw new InvalidOperationException("JWT settings are missing.");
+
+if (string.IsNullOrWhiteSpace(jwtSettings.SecretKey) ||
+    Encoding.UTF8.GetByteCount(jwtSettings.SecretKey) < 32)
+{
+    throw new InvalidOperationException(
+        "JWT secret key must contain at least 32 bytes.");
+}
+
+builder.Services.Configure<JwtSettings>(
+    builder.Configuration.GetSection("Jwt"));
+
+// JWT authentication
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme =
+            JwtBearerDefaults.AuthenticationScheme;
+
+        options.DefaultChallengeScheme =
+            JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+
+            ValidateIssuer = true,
+            ValidIssuer = jwtSettings.Issuer,
+
+            ValidateAudience = true,
+            ValidAudience = jwtSettings.Audience,
+
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
 // Register database initializer
+// Register application services
 builder.Services.AddScoped<DbInitializer>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Controllers
 builder.Services.AddControllers();
