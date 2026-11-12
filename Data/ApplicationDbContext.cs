@@ -1,4 +1,6 @@
-﻿using CampusPlacementSystem.Models;
+﻿
+using CampusPlacementSystem.Models;
+using CampusPlacementSystem.Data.Configurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +16,8 @@ public class ApplicationDbContext
     }
 
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<College> Colleges { get; set; }
+    public DbSet<Student> Students { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -38,5 +42,8 @@ public class ApplicationDbContext
                 .HasForeignKey(rt => rt.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+
+        builder.ApplyConfiguration(new CollegeConfiguration());
+        builder.ApplyConfiguration(new StudentConfiguration());
     }
 }

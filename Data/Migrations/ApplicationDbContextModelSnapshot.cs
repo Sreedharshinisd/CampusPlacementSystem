@@ -100,6 +100,63 @@ namespace CampusPlacementSystem.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("CampusPlacementSystem.Models.College", b =>
+                {
+                    b.Property<int>("CollegeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CollegeId"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("CollegeCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("CollegeName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OfficialEmail")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<string>("UniversityName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Website")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("CollegeId");
+
+                    b.HasIndex("CollegeCode")
+                        .IsUnique();
+
+                    b.ToTable("Colleges");
+                });
+
             modelBuilder.Entity("CampusPlacementSystem.Models.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
@@ -134,6 +191,67 @@ namespace CampusPlacementSystem.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("CampusPlacementSystem.Models.Student", b =>
+                {
+                    b.Property<int>("StudentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentId"));
+
+                    b.Property<decimal>("CGPA")
+                        .HasPrecision(4, 2)
+                        .HasColumnType("decimal(4,2)");
+
+                    b.Property<int>("CollegeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Degree")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Department")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("GraduationYear")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RegisterNumber")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("ResumeUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("StudentId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.HasIndex("CollegeId", "RegisterNumber")
+                        .IsUnique();
+
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -276,6 +394,25 @@ namespace CampusPlacementSystem.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CampusPlacementSystem.Models.Student", b =>
+                {
+                    b.HasOne("CampusPlacementSystem.Models.College", "College")
+                        .WithMany()
+                        .HasForeignKey("CollegeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CampusPlacementSystem.Models.ApplicationUser", "User")
+                        .WithOne()
+                        .HasForeignKey("CampusPlacementSystem.Models.Student", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("College");
 
                     b.Navigation("User");
                 });

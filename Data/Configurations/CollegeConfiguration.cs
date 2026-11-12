@@ -1,0 +1,52 @@
+﻿
+using CampusPlacementSystem.Enums;
+using CampusPlacementSystem.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace CampusPlacementSystem.Data.Configurations;
+
+public class CollegeConfiguration : IEntityTypeConfiguration<College>
+{
+    public void Configure(EntityTypeBuilder<College> builder)
+    {
+        builder.HasKey(c => c.CollegeId);
+
+        builder.Property(c => c.CollegeName)
+            .IsRequired()
+            .HasMaxLength(200);
+
+        builder.Property(c => c.CollegeCode)
+            .IsRequired()
+            .HasMaxLength(50);
+
+        builder.HasIndex(c => c.CollegeCode)
+            .IsUnique();
+
+        builder.Property(c => c.UniversityName)
+            .HasMaxLength(200);
+
+        builder.Property(c => c.OfficialEmail)
+            .IsRequired()
+            .HasMaxLength(255);
+
+        builder.Property(c => c.PhoneNumber)
+            .IsRequired()
+            .HasMaxLength(20);
+
+        builder.Property(c => c.Address)
+            .IsRequired()
+            .HasMaxLength(500);
+
+        builder.Property(c => c.Website)
+            .HasMaxLength(255);
+
+        builder.Property(c => c.Status)
+            .IsRequired()
+            .HasDefaultValue(CollegeStatus.Pending);
+
+        builder.Property(c => c.CreatedAt)
+            .IsRequired();
+        
+    }
+}

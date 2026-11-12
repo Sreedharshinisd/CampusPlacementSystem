@@ -1,9 +1,12 @@
+using CampusPlacementSystem.Repositories;
+using CampusPlacementSystem.Repositories.Interfaces;
 using CampusPlacementSystem.Data;
 using CampusPlacementSystem.Data.Seeders;
 using CampusPlacementSystem.Models;
 using CampusPlacementSystem.Services;
 using CampusPlacementSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -40,7 +43,6 @@ if (string.IsNullOrWhiteSpace(jwtSettings.SecretKey) ||
     throw new InvalidOperationException(
         "JWT secret key must contain at least 32 bytes.");
 }
-
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection("Jwt"));
 
@@ -76,8 +78,17 @@ builder.Services
 // Register database initializer
 // Register application services
 builder.Services.AddScoped<DbInitializer>();
+
+// Authentication
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+// College module
+builder.Services.AddScoped<ICollegeRepository, CollegeRepository>();
+builder.Services.AddScoped<ICollegeService, CollegeService>();
+
+// Student module
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<IStudentService, StudentService>();
 // Controllers
 builder.Services.AddControllers();
 
