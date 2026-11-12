@@ -6,31 +6,28 @@ namespace CampusPlacementSystem.DTOs.College;
 public class CollegeUpdateRequestDto
 {
     [Required]
-    [StringLength(200)]
+    [MaxLength(150)]
     public string CollegeName { get; set; } = string.Empty;
 
     [Required]
-    [StringLength(50)]
+    [MaxLength(150)]
+    public string UniversityName { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(30)]
     public string CollegeCode { get; set; } = string.Empty;
 
-    [StringLength(200)]
-    public string? UniversityName { get; set; }
+    [Required]
+    [MaxLength(250)]
+    public string Address { get; set; } = string.Empty;
 
     [Required]
     [EmailAddress]
-    [StringLength(255)]
     public string OfficialEmail { get; set; } = string.Empty;
 
     [Required]
     [Phone]
-    [StringLength(20)]
     public string PhoneNumber { get; set; } = string.Empty;
 
-    [Required]
-    [StringLength(500)]
-    public string Address { get; set; } = string.Empty;
-
-    [Url]
-    [StringLength(255)]
     public string? Website { get; set; }
 }

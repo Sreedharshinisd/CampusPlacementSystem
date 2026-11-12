@@ -15,14 +15,20 @@ public class ApplicationDbContext
     {
     }
 
+    // Database tables
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+
     public DbSet<College> Colleges { get; set; }
+
     public DbSet<Student> Students { get; set; }
+
+    public DbSet<Company> Companies { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
+        // Refresh Token Configuration
         builder.Entity<RefreshToken>(entity =>
         {
             entity.HasKey(rt => rt.Id);
@@ -43,7 +49,11 @@ public class ApplicationDbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
+        // Entity Configurations
         builder.ApplyConfiguration(new CollegeConfiguration());
+
         builder.ApplyConfiguration(new StudentConfiguration());
+
+        builder.ApplyConfiguration(new CompanyConfiguration());
     }
 }
